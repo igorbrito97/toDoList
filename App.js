@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -17,11 +18,17 @@ import {
   FlatList,
   Alert,
   Image,
+  Modal,
 } from 'react-native';
+import Popover from 'react-native-popover-view';
 
-const App: () => React$Node = () => {
+function App() {
+  //const App: () => React$Node = () => {
+  const [currentId, setId] = useState(0);
   const [task, setTask] = useState('');
   const [toDoList, setList] = useState([]);
+  const [showPopover, setShowPopover] = useState(false);
+  const [popoverIndex, setIndex] = useState(-1);
 
   function getFormatedDate(today) {
     return String(
@@ -37,11 +44,45 @@ const App: () => React$Node = () => {
     );
   }
 
+  function popoverButtonPress() {
+    setShowPopover(false);
+    setIndex(-1);
+  }
+
+  function addNota() {
+    const newItem = {
+      id: currentId,
+      text: task,
+      date: getFormatedDate(new Date()),
+    };
+    let newArray = [...toDoList, newItem];
+    setList(newArray);
+    setTask('');
+    setId(currentId + 1);
+  }
+
+  function excluirNota() {
+    let newArray = toDoList;
+    newArray.splice(popoverIndex, 1);
+    setList(newArray);
+  }
+
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
-        <Text style={styles.titleText}>LISTA DE TAREFAS</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
+          }}>
+          <Image
+            source={require('C:/Users/igor.brito/Documents/toDoApp/assets/toDoIcon2.png')}
+            //style={{marginLeft: 25}}
+          />
+          <Text style={styles.titleText}>LISTA DE TAREFAS</Text>
+        </View>
         <View style={styles.rowContainer}>
           <TextInput
             onChangeText={(value) => {
@@ -57,13 +98,7 @@ const App: () => React$Node = () => {
               if (task.trim() === '') {
                 Alert.alert('Digite algo para inserir!!!');
               } else {
-                const newItem = {
-                  text: task,
-                  date: getFormatedDate(new Date()),
-                };
-                let newArray = [...toDoList, newItem];
-                setList(newArray);
-                setTask('');
+                addNota();
               }
             }}>
             <Text style={styles.textButton}>+</Text>
@@ -72,9 +107,17 @@ const App: () => React$Node = () => {
         <FlatList
           style={styles.listContainer}
           data={toDoList}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({item, index}) => {
+            console.log(item);
             return (
-              <View key={index} style={styles.listItem}>
+              <View
+                key={item.id}
+                style={styles.listItem}
+                onTouchEnd={(e) => {
+                  setIndex(index);
+                  setShowPopover(true);
+                }}>
                 <Text style={styles.itemTaskText}>{item.text}</Text>
                 <Text style={styles.itemDateText}>{item.date}</Text>
               </View>
@@ -82,9 +125,31 @@ const App: () => React$Node = () => {
           }}
         />
       </View>
+      <Popover
+        isVisible={showPopover}
+        onRequestClose={() => setShowPopover(false)}>
+        <View style={styles.popoverContainer}>
+          <Text style={styles.popoverTitle}>Deseja excluir esse item?</Text>
+          <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity
+              onPress={() => popoverButtonPress()}
+              style={[styles.popoverButton, {backgroundColor: 'green'}]}>
+              <Text style={styles.popoverBtnText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                excluirNota();
+                popoverButtonPress();
+              }}
+              style={[styles.popoverButton, {backgroundColor: 'red'}]}>
+              <Text style={styles.popoverBtnText}>Excluir</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Popover>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -96,7 +161,8 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 35,
     color: '#1ABC9C',
-    margin: 25,
+    margin: 15,
+    fontFamily: 'sans-serif-condensed',
   },
   input: {
     width: '70%',
@@ -150,16 +216,29 @@ const styles = StyleSheet.create({
     color: '#707070',
     margin: 5,
   },
+  popoverContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popoverTitle: {
+    fontSize: 20,
+    fontWeight: '500',
+    marginTop: 15,
+    marginBottom: 5,
+  },
+  popoverButton: {
+    width: '35%',
+    height: 30,
+    borderRadius: 20,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popoverBtnText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default App;
-/*
-
-
-        <Image
-          source={require('')}
-          style={{height: 58, width: '75%'}}
-          resizeMode="cover"
-        />
-
-        */
