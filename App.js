@@ -1,12 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -15,10 +7,9 @@ import {
   StatusBar,
   TextInput,
   TouchableOpacity,
-  FlatList,
   Alert,
   Image,
-  Modal,
+  Keyboard,
 } from 'react-native';
 import Popover from 'react-native-popover-view';
 
@@ -71,18 +62,11 @@ function App() {
     <>
       <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-          }}>
-          <Image
-            source={require('C:/Users/igor.brito/Documents/toDoApp/assets/toDoIcon2.png')}
-            //style={{marginLeft: 25}}
-          />
-          <Text style={styles.titleText}>LISTA DE TAREFAS</Text>
-        </View>
+        <Image
+          source={require('C:/Users/igor.brito/Documents/toDoApp/assets/todo-list.png')}
+          resizeMode="contain"
+          style={{width: '75%', height: 50}}
+        />
         <View style={styles.rowContainer}>
           <TextInput
             onChangeText={(value) => {
@@ -99,17 +83,14 @@ function App() {
                 Alert.alert('Digite algo para inserir!!!');
               } else {
                 addNota();
+                Keyboard.dismiss();
               }
             }}>
             <Text style={styles.textButton}>+</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          style={styles.listContainer}
-          data={toDoList}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={({item, index}) => {
-            console.log(item);
+        <View style={styles.listContainer}>
+          {toDoList.map((item, index) => {
             return (
               <View
                 key={item.id}
@@ -118,12 +99,12 @@ function App() {
                   setIndex(index);
                   setShowPopover(true);
                 }}>
-                <Text style={styles.itemTaskText}>{item.text}</Text>
                 <Text style={styles.itemDateText}>{item.date}</Text>
+                <Text style={styles.itemTaskText}>{item.text}</Text>
               </View>
             );
-          }}
-        />
+          })}
+        </View>
       </View>
       <Popover
         isVisible={showPopover}
@@ -157,64 +138,53 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'flex-start',
-  },
-  titleText: {
-    fontSize: 35,
-    color: '#1ABC9C',
-    margin: 15,
-    fontFamily: 'sans-serif-condensed',
+    padding: 16,
   },
   input: {
-    width: '70%',
-    height: 40,
-    borderBottomWidth: 2,
+    width: '80%',
+    borderBottomWidth: 1,
     borderBottomColor: '#707070',
     marginRight: 12,
+    marginTop: 10,
+    alignContent: 'flex-end',
   },
   rowContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   addButon: {
-    width: 32,
-    height: 32,
+    width: 52,
     backgroundColor: '#FFAA00',
-    borderRadius: 30,
+    borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 10,
   },
   textButton: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
   },
   listContainer: {
     width: '100%',
-    marginLeft: 50,
     marginBottom: 15,
+    marginTop: 15,
   },
   listItem: {
-    flexDirection: 'row',
     backgroundColor: '#F5F8F9',
-    width: '85%',
     height: 50,
     borderLeftWidth: 7,
     borderLeftColor: '#1ABC9C',
-    justifyContent: 'space-between',
     marginBottom: 15,
+    padding: 8,
   },
   itemTaskText: {
     fontSize: 18,
     color: '#707070',
-    textAlignVertical: 'bottom',
-    margin: 5,
   },
   itemDateText: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#707070',
-    margin: 5,
+    textAlign: 'right',
   },
   popoverContainer: {
     justifyContent: 'center',
