@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -12,28 +13,21 @@ import {
   Keyboard,
 } from 'react-native';
 import Popover from 'react-native-popover-view';
+import { format } from 'date-fns';
+
+interface ListaTarefasInterface {
+  id: number;
+  text: string;
+  date: Date;
+}
 
 function App() {
   //const App: () => React$Node = () => {
   const [currentId, setId] = useState(0);
   const [task, setTask] = useState('');
-  const [toDoList, setList] = useState([]);
+  const [toDoList, setList] = useState<Array<ListaTarefasInterface>>([]);
   const [showPopover, setShowPopover] = useState(false);
   const [popoverIndex, setIndex] = useState(-1);
-
-  function getFormatedDate(today) {
-    return String(
-      today.getDate() +
-        '/' +
-        today.getMonth() +
-        '/' +
-        today.getFullYear() +
-        ' ' +
-        today.getHours() +
-        ':' +
-        today.getMinutes(),
-    );
-  }
 
   function popoverButtonPress() {
     setShowPopover(false);
@@ -44,7 +38,7 @@ function App() {
     const newItem = {
       id: currentId,
       text: task,
-      date: getFormatedDate(new Date()),
+      date: new Date(),
     };
     let newArray = [newItem, ...toDoList];
     setList(newArray);
@@ -65,7 +59,7 @@ function App() {
         <Image
           source={require('C:/Users/igor.brito/Documents/toDoApp/assets/todo-list.png')}
           resizeMode="contain"
-          style={{width: '75%', height: 50}}
+          style={{ width: '75%', height: 50 }}
         />
         <View style={styles.rowContainer}>
           <TextInput
@@ -95,11 +89,13 @@ function App() {
               <View
                 key={item.id}
                 style={styles.listItem}
-                onTouchEnd={(e) => {
+                onTouchEnd={() => {
                   setIndex(index);
                   setShowPopover(true);
                 }}>
-                <Text style={styles.itemDateText}>{item.date}</Text>
+                <Text style={styles.itemDateText}>
+                  {format(item.date, 'dd/MM/yyyy HH:mm')}
+                </Text>
                 <Text style={styles.itemTaskText}>{item.text}</Text>
               </View>
             );
@@ -111,10 +107,10 @@ function App() {
         onRequestClose={() => setShowPopover(false)}>
         <View style={styles.popoverContainer}>
           <Text style={styles.popoverTitle}>Deseja excluir esse item?</Text>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity
               onPress={() => popoverButtonPress()}
-              style={[styles.popoverButton, {backgroundColor: 'green'}]}>
+              style={[styles.popoverButton, { backgroundColor: 'green' }]}>
               <Text style={styles.popoverBtnText}>Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -122,7 +118,7 @@ function App() {
                 excluirNota();
                 popoverButtonPress();
               }}
-              style={[styles.popoverButton, {backgroundColor: 'red'}]}>
+              style={[styles.popoverButton, { backgroundColor: 'red' }]}>
               <Text style={styles.popoverBtnText}>Excluir</Text>
             </TouchableOpacity>
           </View>
