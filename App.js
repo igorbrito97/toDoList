@@ -46,7 +46,7 @@ function App() {
       text: task,
       date: getFormatedDate(new Date()),
     };
-    let newArray = [...toDoList, newItem];
+    let newArray = [newItem, ...toDoList];
     setList(newArray);
     setTask('');
     setId(currentId + 1);
